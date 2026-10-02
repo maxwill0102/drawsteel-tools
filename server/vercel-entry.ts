@@ -1,4 +1,4 @@
-import { handle } from "hono/vercel";
 import app from "./app";
 
-export default handle(app);
+// @vercel/node Web fetch-style signature (handles all HTTP methods)
+export const fetch = app.fetch;
