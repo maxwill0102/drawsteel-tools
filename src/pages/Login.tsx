@@ -17,7 +17,25 @@ function getOAuthUrl() {
   return url.toString();
 }
 
+const AUTH_AVAILABLE = Boolean(import.meta.env.VITE_KIMI_AUTH_URL);
+
 export default function Login() {
+  if (!AUTH_AVAILABLE) {
+    return (
+      <Layout>
+        <div className="flex min-h-[70vh] items-center justify-center px-4">
+          <div className="w-full max-w-sm rounded-lg border border-[var(--line-soft)] bg-[var(--ink-2)] p-8 text-center">
+            <Swords className="mx-auto h-8 w-8 text-[var(--gold)]" />
+            <h1 className="mt-4 font-display text-2xl font-bold">No account needed</h1>
+            <p className="mt-2 text-sm leading-6 text-[var(--slate)]">
+              This deployment runs without sign-in. Every tool works fully
+              anonymously — build encounters and share them by link.
+            </p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
   return (
     <Layout>
       <div className="flex min-h-[70vh] items-center justify-center px-4">

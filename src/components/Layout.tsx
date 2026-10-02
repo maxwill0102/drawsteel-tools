@@ -4,6 +4,8 @@ import { Menu, X, Swords } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
+const AUTH_AVAILABLE = Boolean(import.meta.env.VITE_KIMI_AUTH_URL);
+
 const NAV = [
   { to: "/", label: "Encounter Builder" },
   { to: "/encounter-calculator", label: "Calculator" },
@@ -48,7 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            {isAuthenticated ? (
+            {!AUTH_AVAILABLE ? null : isAuthenticated ? (
               <>
                 <Link
                   to="/encounters"
@@ -100,7 +102,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </NavLink>
             ))}
             <div className="mt-2 border-t border-[var(--line-soft)] pt-3">
-              {isAuthenticated ? (
+              {!AUTH_AVAILABLE ? null : isAuthenticated ? (
                 <>
                   <Link
                     to="/encounters"

@@ -1,73 +1,58 @@
-# React + TypeScript + Vite
+# Draw Steel Tools
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Free tools for Directors running **DRAW STEEL**: encounter builder, encounter
+calculator, browser battle table (tokens + Malice tracking), 2d10 power-roll
+dice roller, and a Foundry VTT setup guide.
 
-Currently, two official plugins are available:
+Draw Steel Tools is an independent product published under the DRAW STEEL
+Creator License and is not affiliated with MCDM Productions, LLC.
+DRAW STEEL © 2025 MCDM Productions, LLC.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
 
-## React Compiler
+- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS
+- **Backend**: Hono + tRPC (runs as a Vercel serverless function, or as a Node server)
+- **Database**: MySQL via Drizzle ORM (TiDB Cloud / PlanetScale / Aiven / any MySQL 8)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Rules data
 
-## Expanding the ESLint configuration
+Monster EV and Stamina are computed with the official formulas from
+*Draw Steel: Monsters* (`EV = ceil((2 × level + 4) × organization modifier)`)
+and verified against the published stat blocks. Difficulty budgets follow the
+official encounter-building rules (`hero ES = 4 + 2 × level`).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Local development
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+cp .env.example .env   # fill in DATABASE_URL
+npm run db:push        # create tables
+npx tsx db/seed.ts     # seed the monster data
+npm run dev            # http://localhost:3000
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Deploy to Vercel
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Import this repo in Vercel (or `vercel deploy` with the CLI).
+2. Add the environment variable `DATABASE_URL` (a MySQL connection string).
+3. After the first deploy, run `npm run db:push && npx tsx db/seed.ts` locally
+   with the same `DATABASE_URL` to create tables and seed monsters.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Vercel serves the static SPA from `dist/public` and runs the tRPC API as a
+single catch-all serverless function (`api/[...slug].ts`).
+
+## Environment variables
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `DATABASE_URL` | yes | MySQL connection string |
+| `APP_ID` / `APP_SECRET` / `KIMI_AUTH_URL` / `KIMI_OPEN_URL` | no | Kimi OAuth (only on the Kimi platform; sign-in UI hides itself when absent) |
+
+## Alternative: run as a Node server (Docker / VPS / Railway)
+
+```bash
+npm run build
+npm start   # serves API + static files on :3000
 ```
+
+A `Dockerfile` is included.

@@ -9,7 +9,7 @@ import {
   bigint,
   json,
 } from "drizzle-orm/mysql-core";
-import type { LineupEntry } from "@contracts/game";
+import type { LineupEntry } from "../contracts/game";
 
 export const users = mysqlTable("users", {
   id: serial("id").primaryKey(),

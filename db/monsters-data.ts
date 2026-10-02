@@ -3,7 +3,7 @@ import {
   monsterStamina,
   type MonsterRole,
   type Organization,
-} from "@contracts/game";
+} from "../contracts/game";
 
 interface RawMonster {
   name: string;

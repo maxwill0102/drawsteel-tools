@@ -4,8 +4,8 @@ import * as jose from "jose";
 import * as cookie from "cookie";
 import { env } from "../lib/env";
 import { getSessionCookieOptions } from "../lib/cookies";
-import { Session } from "@contracts/constants";
-import { Errors } from "@contracts/errors";
+import { Session } from "../../contracts/constants";
+import { Errors } from "../../contracts/errors";
 import { signSessionToken, verifySessionToken } from "./session";
 import { users as kimiUsers } from "./platform";
 import { findUserByUnionId, upsertUser } from "../queries/users";
@@ -37,13 +37,16 @@ async function exchangeAuthCode(
   return resp.json() as Promise<TokenResponse>;
 }
 
-const jwks = jose.createRemoteJWKSet(
-  new URL(`${env.kimiAuthUrl}/api/.well-known/jwks.json`),
-);
+const jwks = env.kimiAuthUrl
+  ? jose.createRemoteJWKSet(
+      new URL(`${env.kimiAuthUrl}/api/.well-known/jwks.json`),
+    )
+  : null;
 
 async function verifyAccessToken(
   accessToken: string,
 ): Promise<{ userId: string; clientId: string }> {
+  if (!jwks) throw new Error("Kimi OAuth is not configured on this deployment.");
   const { payload } = await jose.jwtVerify(accessToken, jwks);
   const userId = payload.user_id as string;
   const clientId = payload.client_id as string;

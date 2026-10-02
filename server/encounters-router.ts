@@ -3,8 +3,8 @@ import { and, desc, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { createRouter, publicQuery, authedQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { encounters } from "@db/schema";
-import { SHARE_SLUG_ALPHABET, type LineupEntry } from "@contracts/game";
+import { encounters } from "../db/schema";
+import { SHARE_SLUG_ALPHABET, type LineupEntry } from "../contracts/game";
 
 const lineupSchema = z
   .array(
