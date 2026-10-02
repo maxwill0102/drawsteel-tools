@@ -4,72 +4,170 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.625rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+    --ink: #0b1220;
+    --ink-2: #101a2e;
+    --ink-3: #16223c;
+    --line: rgba(240, 192, 64, 0.14);
+    --line-soft: rgba(244, 245, 247, 0.09);
+    --crimson: #d63c2a;
+    --crimson-soft: #e06552;
+    --gold: #f0c040;
+    --parchment: #f4f1e8;
+    --parchment-ink: #191510;
+    --slate: #8a96ac;
+    --paper: #f4f5f7;
 
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 222 47% 8%;
+    --foreground: 210 30% 94%;
+    --card: 219 48% 12%;
+    --card-foreground: 210 30% 94%;
+    --popover: 219 48% 12%;
+    --popover-foreground: 210 30% 94%;
+    --primary: 8 68% 50%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 218 40% 18%;
+    --secondary-foreground: 210 30% 94%;
+    --muted: 218 30% 20%;
+    --muted-foreground: 217 15% 62%;
+    --accent: 218 40% 18%;
+    --accent-foreground: 210 30% 94%;
+    --destructive: 8 68% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 217 25% 22%;
+    --input: 217 25% 22%;
+    --ring: 43 85% 60%;
+    --radius: 0.5rem;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--ink);
+  color: var(--paper);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: "Cinzel", serif;
+}
+
+.font-num {
+  font-family: "Bebas Neue", "Inter", sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.font-body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Ember ambience: slow drifting glow layers behind hero */
+@keyframes ember-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.5; }
+  50% { transform: translate3d(4%, -3%, 0) scale(1.08); opacity: 0.75; }
+  100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.5; }
+}
+
+.ember-layer {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  animation: ember-drift 14s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.rise-in-1 { animation-delay: 0.08s; }
+.rise-in-2 { animation-delay: 0.18s; }
+.rise-in-3 { animation-delay: 0.3s; }
+
+/* Budget bar */
+.budget-bar {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #5b6472 0%,
+    #5b6472 var(--trivial-end),
+    #3f8f5f var(--trivial-end),
+    #3f8f5f var(--easy-end),
+    #f0c040 var(--easy-end),
+    #f0c040 var(--standard-end),
+    #d63c2a var(--standard-end),
+    #d63c2a var(--hard-end),
+    #8f1f14 var(--hard-end),
+    #8f1f14 100%
+  );
+}
+
+/* Monster trading card */
+.monster-card {
+  background: var(--parchment);
+  color: var(--parchment-ink);
+  border-radius: 6px;
+  border: 0.5px solid rgba(11, 18, 32, 0.25);
+  box-shadow: 0 1px 0 rgba(244, 245, 247, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.monster-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Grid cells for VTT */
+.vtt-grid {
+  background-image:
+    linear-gradient(rgba(240, 192, 64, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240, 192, 64, 0.07) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+}
+
+.vtt-token {
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.vtt-token:active {
+  cursor: grabbing;
+}
+
+/* Dice button faces */
+.die-face {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(240, 192, 64, 0.25);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(240, 192, 64, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ember-layer, .rise-in {
+    animation: none;
   }
 }

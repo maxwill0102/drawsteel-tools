@@ -1,17 +1,20 @@
 import { getDb } from "../api/queries/connection";
-// TODO: import tables from "./schema"
+import { monsters } from "./schema";
+import { MONSTER_SEED } from "./monsters-data";
 
 async function seed() {
   const db = getDb();
   console.log("Seeding database...");
 
-  // TODO: insert seed data, e.g.
-  // await db.insert(schema.posts).values([
-  //   { title: "First post", content: "Hello world" },
-  // ]);
+  const existing = await db.select({ id: monsters.id }).from(monsters).limit(1);
+  if (existing.length > 0) {
+    console.log("Monsters already seeded, skipping.");
+    process.exit(0);
+  }
 
-  console.log("Done.");
-  process.exit(0); // close MySQL connection pool
+  await db.insert(monsters).values(MONSTER_SEED);
+  console.log(`Seeded ${MONSTER_SEED.length} monsters.`);
+  process.exit(0);
 }
 
 seed();

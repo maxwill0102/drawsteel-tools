@@ -1,14 +1,13 @@
 import { authRouter } from "./auth-router";
+import { monstersRouter } from "./monsters-router";
+import { encountersRouter } from "./encounters-router";
 import { createRouter, publicQuery } from "./middleware";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
   auth: authRouter,
-
-  // TODO: add feature routers here, e.g.
-  // todo: createRouter({
-  //   list: publicQuery.query(() => findTodos()),
-  // }),
+  monsters: monstersRouter,
+  encounters: encountersRouter,
 });
 
 export type AppRouter = typeof appRouter;

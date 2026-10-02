@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Swords } from "lucide-react";
+import Layout from "@/components/Layout";
 
 function getOAuthUrl() {
   const kimiAuthUrl = import.meta.env.VITE_KIMI_AUTH_URL;
@@ -19,23 +19,25 @@ function getOAuthUrl() {
 
 export default function Login() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle>Welcome</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            className="w-full"
-            size="lg"
+    <Layout>
+      <div className="flex min-h-[70vh] items-center justify-center px-4">
+        <div className="w-full max-w-sm rounded-lg border border-[var(--line-soft)] bg-[var(--ink-2)] p-8 text-center">
+          <Swords className="mx-auto h-8 w-8 text-[var(--gold)]" />
+          <h1 className="mt-4 font-display text-2xl font-bold">Director's Account</h1>
+          <p className="mt-2 text-sm leading-6 text-[var(--slate)]">
+            Sign in to keep a library of saved encounters across devices. The
+            tools themselves never require an account.
+          </p>
+          <button
+            className="mt-6 h-12 w-full rounded bg-[var(--crimson)] text-sm font-semibold text-white hover:bg-[var(--crimson-soft)]"
             onClick={() => {
               window.location.href = getOAuthUrl();
             }}
           >
             Sign in with Kimi
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+          </button>
+        </div>
+      </div>
+    </Layout>
   );
 }

@@ -5,8 +5,11 @@ import {
   varchar,
   text,
   timestamp,
-  // bigint,
+  int,
+  bigint,
+  json,
 } from "drizzle-orm/mysql-core";
+import type { LineupEntry } from "@contracts/game";
 
 export const users = mysqlTable("users", {
   id: serial("id").primaryKey(),
@@ -26,15 +29,43 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here. See docs/Database.md for schema examples and patterns.
-//
-// Example:
-// export const posts = mysqlTable("posts", {
-//   id: serial("id").primaryKey(),
-//   title: varchar("title", { length: 255 }).notNull(),
-//   content: text("content"),
-//   createdAt: timestamp("created_at").notNull().defaultNow(),
-// });
-//
-// Note: FK columns referencing a serial() PK must use:
-//   bigint("columnName", { mode: "number", unsigned: true }).notNull()
+export const monsters = mysqlTable("monsters", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  groupName: varchar("groupName", { length: 255 }).notNull(),
+  keywords: json("keywords").$type<string[]>().notNull(),
+  level: int("level").notNull(),
+  organization: mysqlEnum("organization", [
+    "minion",
+    "horde",
+    "platoon",
+    "elite",
+    "leader",
+    "solo",
+  ]).notNull(),
+  role: varchar("role", { length: 32 }),
+  ev: int("ev").notNull(),
+  stamina: int("stamina").notNull(),
+});
+
+export type MonsterRow = typeof monsters.$inferSelect;
+
+export const encounters = mysqlTable("encounters", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 16 }).notNull().unique(),
+  name: varchar("name", { length: 255 }).notNull(),
+  userId: bigint("userId", { mode: "number", unsigned: true }),
+  heroCount: int("heroCount").notNull(),
+  heroLevel: int("heroLevel").notNull(),
+  victories: int("victories").notNull().default(0),
+  lineup: json("lineup").$type<LineupEntry[]>().notNull(),
+  totalEv: int("totalEv").notNull(),
+  difficulty: varchar("difficulty", { length: 16 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export type EncounterRow = typeof encounters.$inferSelect;
