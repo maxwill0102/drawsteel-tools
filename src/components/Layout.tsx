@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation } from "react-router";
 import { useState } from "react";
-import { Menu, X, Swords } from "lucide-react";
+import { Menu, X, Swords, Github } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
@@ -148,6 +148,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Free tools for Directors running DRAW STEEL — encounter building,
                 budgets, dice and battle maps.
               </p>
+              <a
+                href="https://github.com/maxwill0102/drawsteel-tools"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex min-h-[44px] items-center gap-2 text-sm text-[var(--slate)] hover:text-[var(--gold)]"
+              >
+                <Github className="h-4 w-4" />
+                Open source on GitHub
+              </a>
             </div>
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--gold)]">

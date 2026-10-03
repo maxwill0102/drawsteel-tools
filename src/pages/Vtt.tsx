@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router";
+import { Link } from "react-router";
 import { toast } from "sonner";
 import { Flame, Plus, RotateCcw } from "lucide-react";
 import Layout from "@/components/Layout";
-import { trpc } from "@/providers/trpc";
+import type { EncounterRow } from "@db/schema";
 import { ORG_LABEL, type Monster } from "@contracts/game";
 import type { MonsterRow } from "@db/schema";
 import { cn } from "@/lib/utils";
@@ -32,11 +32,16 @@ const ORG_COLOR: Record<Monster["organization"], string> = {
 
 let tokenKey = 0;
 
-export default function Vtt() {
-  const { data: monsterRows } = trpc.monsters.list.useQuery();
+export type VttLoaderData = {
+  monsters: MonsterRow[];
+  shared: EncounterRow | null;
+};
+
+export default function Vtt({ loaderData }: { loaderData: VttLoaderData }) {
+  const { monsters: monsterRows, shared: loaded } = loaderData;
   const monsters = useMemo(
     () =>
-      (monsterRows ?? []).map((r: MonsterRow) => ({
+      monsterRows.map((r: MonsterRow) => ({
         id: r.id,
         name: r.name,
         organization: r.organization as Monster["organization"],
@@ -52,14 +57,8 @@ export default function Vtt() {
   const [heroCount, setHeroCount] = useState(4);
   const boardRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ key: number; moved: boolean } | null>(null);
-  const [searchParams] = useSearchParams();
 
-  // Load encounter tokens from share link: /vtt?e=<slug>
-  const loadSlug = searchParams.get("e");
-  const { data: loaded } = trpc.encounters.bySlug.useQuery(
-    { slug: loadSlug! },
-    { enabled: !!loadSlug, retry: false },
-  );
+  // Load encounter tokens from share link: /vtt?e=<slug> (resolved by the server loader)
   useEffect(() => {
     if (!loaded) return;
     setHeroCount(loaded.heroCount);
@@ -302,6 +301,73 @@ export default function Vtt() {
             </div>
           </aside>
         </div>
+
+        {/* Rules primer */}
+        <section className="mt-14 max-w-3xl">
+          <h2 className="font-display text-2xl font-bold sm:text-3xl">
+            Running Draw Steel on a Virtual Tabletop
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-[var(--slate)]">
+            Draw Steel is a tactical game: positioning, forced movement and
+            terrain decide fights, so a grid with movable tokens covers most of
+            what a Director needs online. This battle table is a lightweight
+            Draw Steel VTT — deploy monsters as color-coded tokens (one color
+            per organization: minions, hordes, elites, leaders and solos), drag
+            them around the grid, and tap to remove the fallen. For the full
+            rules engine with automation, pair your encounters with{" "}
+            <Link to="/foundry" className="text-[var(--gold)] underline">
+              Foundry VTT
+            </Link>
+            ; for a fast pick-up fight, this page is the whole table.
+          </p>
+          <p className="mt-3 text-sm leading-7 text-[var(--slate)]">
+            Malice is tracked the official way. Combat starts with Malice equal
+            to the heroes' average Victories — load an encounter by link and
+            this is set for you. At the start of every round, the Director
+            gains Malice equal to the number of heroes plus the round number:
+            round 1 with four heroes is +5, round 2 is +6, and so on. Spend it
+            on monster abilities, then hit "end round" to bank the next
+            round's income automatically.
+          </p>
+        </section>
+
+        {/* FAQ */}
+        <section className="mt-12 max-w-3xl">
+          <h2 className="font-display text-2xl font-bold sm:text-3xl">
+            Draw Steel VTT FAQ
+          </h2>
+          <div className="mt-6 space-y-3">
+            {[
+              {
+                q: "What is a Draw Steel VTT?",
+                a: "A Draw Steel VTT (virtual tabletop) is any online table used to run Draw Steel battles remotely: a shared grid, monster tokens, and trackers for Malice and rounds. Full VTTs like Foundry run the whole game; this battle table is a free, zero-setup alternative that runs in the browser.",
+              },
+              {
+                q: "How does Malice work in Draw Steel?",
+                a: "Malice is the Director's resource for powering monster abilities. At the start of each round the Director gains Malice equal to the number of heroes in the battle plus the round number. At the start of combat, the Director's Malice equals the heroes' average Victories.",
+              },
+              {
+                q: "Can I load a shared encounter into the battle table?",
+                a: "Yes. Every encounter built in the encounter builder has a share link ending in /e/your-slug. Open /vtt?e=your-slug and the battle table deploys the monsters as tokens automatically, with starting Malice set from the party's Victories.",
+              },
+              {
+                q: "Is this Draw Steel VTT free?",
+                a: "Yes. The battle table is free, needs no account and no install — open the link on any laptop, tablet or phone and start placing tokens.",
+              },
+            ].map((f) => (
+              <details
+                key={f.q}
+                className="group rounded-lg border border-[var(--line-soft)] bg-[var(--ink-2)] px-5 py-4 open:border-[var(--line)]"
+              >
+                <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between text-sm font-semibold leading-6">
+                  {f.q}
+                  <span className="ml-4 text-[var(--gold)] transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="pb-2 pt-1 text-sm leading-6 text-[var(--slate)]">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
       </section>
     </Layout>
   );

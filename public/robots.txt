@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /encounters
+Disallow: /login
+
+Sitemap: https://drawsteel-tools.vercel.app/sitemap.xml

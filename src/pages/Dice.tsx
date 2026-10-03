@@ -231,6 +231,68 @@ export default function Dice() {
             )}
           </aside>
         </div>
+
+        {/* Rules primer */}
+        <section className="mt-14 max-w-3xl">
+          <h2 className="font-display text-2xl font-bold sm:text-3xl">
+            How Power Rolls Work in Draw Steel
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-[var(--slate)]">
+            Every meaningful action in Draw Steel — attacks, tests,
+            resistances — resolves with a power roll: 2d10 plus your
+            characteristic and any bonuses. The total maps to one of three
+            outcome tiers: 11 or lower is tier 1, 12–16 is tier 2, and 17 or
+            higher is tier 3. Abilities spell out what each tier does, so a
+            single roll decides both hit and impact — there is no separate
+            damage roll for most strikes.
+          </p>
+          <p className="mt-3 text-sm leading-7 text-[var(--slate)]">
+            Edges and banes shape the odds without re-rolling dice: each edge
+            adds +2 to the total, each bane subtracts 2, and the two cancel
+            one another. Set them above before you roll and the tier result is
+            computed for you — two edges turn an average 11 into a tier-2
+            result, and make tier 3 a real possibility instead of a lucky
+            break.
+          </p>
+        </section>
+
+        {/* FAQ */}
+        <section className="mt-12 max-w-3xl">
+          <h2 className="font-display text-2xl font-bold sm:text-3xl">
+            Draw Steel Dice FAQ
+          </h2>
+          <div className="mt-6 space-y-3">
+            {[
+              {
+                q: "What dice do you need to play Draw Steel?",
+                a: "Draw Steel uses two ten-sided dice (2d10) for power rolls — the core test mechanic for attacks, tests and resistances. No other dice are required, which is why a 2d10 roller covers nearly every roll at the table.",
+              },
+              {
+                q: "How do power roll tiers work in Draw Steel?",
+                a: "Roll 2d10 and add your characteristic and any bonuses. A total of 11 or lower is a tier 1 outcome, 12–16 is tier 2, and 17 or higher is tier 3. Higher tiers mean stronger effects — abilities list exactly what each tier does.",
+              },
+              {
+                q: "How do edges and banes work in Draw Steel?",
+                a: "Each edge on a roll adds +2 to the total, and each bane subtracts 2. Edges and banes cancel each other out. Two or more edges can turn a likely tier 2 result into a tier 3 — the roller above applies them automatically.",
+              },
+              {
+                q: "Does this Draw Steel dice roller work on phones?",
+                a: "Yes. The roller is a web page, not an app — it works in any mobile browser, keeps a history of your last 30 rolls, and needs no account or download.",
+              },
+            ].map((f) => (
+              <details
+                key={f.q}
+                className="group rounded-lg border border-[var(--line-soft)] bg-[var(--ink-2)] px-5 py-4 open:border-[var(--line)]"
+              >
+                <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between text-sm font-semibold leading-6">
+                  {f.q}
+                  <span className="ml-4 text-[var(--gold)] transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="pb-2 pt-1 text-sm leading-6 text-[var(--slate)]">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
       </section>
     </Layout>
   );

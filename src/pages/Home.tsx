@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link } from "react-router";
 import { toast } from "sonner";
 import {
   Download,
@@ -28,7 +28,7 @@ import {
   type LineupEntry,
   type Monster,
 } from "@contracts/game";
-import type { MonsterRow } from "@db/schema";
+import type { EncounterRow, MonsterRow } from "@db/schema";
 import { cn } from "@/lib/utils";
 
 const DIFF_STYLE: Record<Difficulty, { label: string; cls: string }> = {
@@ -99,12 +99,16 @@ function Stepper({
   );
 }
 
-export default function Home() {
-  const { data: monsterRows, isLoading: monstersLoading } = trpc.monsters.list.useQuery();
-  const { data: stats } = trpc.encounters.stats.useQuery();
+export type HomeLoaderData = {
+  monsters: MonsterRow[];
+  stats: { encountersBuilt: number };
+  shared: EncounterRow | null;
+};
+
+export default function Home({ loaderData }: { loaderData: HomeLoaderData }) {
+  const { monsters: monsterRows, shared } = loaderData;
   const { isAuthenticated } = useAuth();
   const utils = trpc.useUtils();
-  const [searchParams] = useSearchParams();
 
   const [heroCount, setHeroCount] = useState(4);
   const [heroLevel, setHeroLevel] = useState(1);
@@ -125,22 +129,17 @@ export default function Home() {
     [monsters],
   );
 
-  // Load a shared encounter into the builder via /?e=<slug>
-  const loadSlug = searchParams.get("e");
-  const { data: loaded } = trpc.encounters.bySlug.useQuery(
-    { slug: loadSlug! },
-    { enabled: !!loadSlug, retry: false },
-  );
+  // Load a shared encounter into the builder via /?e=<slug> (resolved by the server loader)
   useEffect(() => {
-    if (loaded) {
-      setHeroCount(loaded.heroCount);
-      setHeroLevel(loaded.heroLevel);
-      setVictories(loaded.victories);
-      setLineup(loaded.lineup);
-      setEncounterName(loaded.name);
-      toast.success(`Loaded "${loaded.name}"`);
+    if (shared) {
+      setHeroCount(shared.heroCount);
+      setHeroLevel(shared.heroLevel);
+      setVictories(shared.victories);
+      setLineup(shared.lineup);
+      setEncounterName(shared.name);
+      toast.success(`Loaded "${shared.name}"`);
     }
-  }, [loaded]);
+  }, [shared]);
 
   const es = partyES(heroCount, heroLevel, victories);
   const hES = heroES(heroLevel);
@@ -291,8 +290,8 @@ export default function Home() {
               <span className="ml-2">official monsters</span>
             </div>
             <div>
-              <span className="font-num text-3xl text-[var(--paper)]">{stats?.encountersBuilt ?? "…"}</span>
-              <span className="ml-2">encounters built here</span>
+              <span className="font-num text-3xl text-[var(--paper)]">5</span>
+              <span className="ml-2">free tools, no signup</span>
             </div>
           </div>
         </div>
@@ -356,13 +355,7 @@ export default function Home() {
               ))}
             </div>
 
-            {monstersLoading ? (
-              <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="h-40 animate-pulse rounded bg-[var(--ink-2)]" />
-                ))}
-              </div>
-            ) : filtered.length === 0 ? (
+            {filtered.length === 0 ? (
               <div className="mt-8 rounded border border-dashed border-[var(--line-soft)] p-10 text-center text-sm text-[var(--slate)]">
                 No monsters match these filters. Try clearing the search or widening the level range.
               </div>
