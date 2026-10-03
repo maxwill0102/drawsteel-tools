@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { Flame, Plus, RotateCcw } from "lucide-react";
 import Layout from "@/components/Layout";
-import type { EncounterRow } from "@db/schema";
+import { trpc } from "@/providers/trpc";
 import { ORG_LABEL, type Monster } from "@contracts/game";
 import type { MonsterRow } from "@db/schema";
 import { cn } from "@/lib/utils";
@@ -31,16 +32,11 @@ const ORG_COLOR: Record<Monster["organization"], string> = {
 
 let tokenKey = 0;
 
-export type VttLoaderData = {
-  monsters: MonsterRow[];
-  shared: EncounterRow | null;
-};
-
-export default function Vtt({ loaderData }: { loaderData: VttLoaderData }) {
-  const { monsters: monsterRows, shared: loaded } = loaderData;
+export default function Vtt() {
+  const { data: monsterRows } = trpc.monsters.list.useQuery();
   const monsters = useMemo(
     () =>
-      monsterRows.map((r: MonsterRow) => ({
+      (monsterRows ?? []).map((r: MonsterRow) => ({
         id: r.id,
         name: r.name,
         organization: r.organization as Monster["organization"],
@@ -56,8 +52,14 @@ export default function Vtt({ loaderData }: { loaderData: VttLoaderData }) {
   const [heroCount, setHeroCount] = useState(4);
   const boardRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ key: number; moved: boolean } | null>(null);
+  const [searchParams] = useSearchParams();
 
-  // Load encounter tokens from share link: /vtt?e=<slug> (resolved by the server loader)
+  // Load encounter tokens from share link: /vtt?e=<slug>
+  const loadSlug = searchParams.get("e");
+  const { data: loaded } = trpc.encounters.bySlug.useQuery(
+    { slug: loadSlug! },
+    { enabled: !!loadSlug, retry: false },
+  );
   useEffect(() => {
     if (!loaded) return;
     setHeroCount(loaded.heroCount);

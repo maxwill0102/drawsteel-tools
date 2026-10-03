@@ -1,22 +1,29 @@
-import { reactRouter } from "@react-router/dev/vite";
-import path from "path";
-import { defineConfig } from "vite";
+import devServer from "@hono/vite-dev-server"
+import path from "path"
+const __dirname = import.meta.dirname
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vite"
+import { inspectAttr } from 'kimi-plugin-inspect-react'
 
-const __dirname = import.meta.dirname;
-
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [reactRouter()],
+  plugins: [
+    devServer({ entry: "server/boot.ts", exclude: [/^\/(?!api\/).*$/] }),
+    inspectAttr(), react()],
   server: {
-    // Vercel dev proxy and Docker inject PORT; default 3000 locally
-    port: Number(process.env.PORT ?? 3000),
+    port: 3000,
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@contracts": path.resolve(__dirname, "./contracts"),
       "@db": path.resolve(__dirname, "./db"),
-      db: path.resolve(__dirname, "./db"),
+      "db": path.resolve(__dirname, "./db"),
     },
   },
   envDir: path.resolve(__dirname),
+  build: {
+    outDir: path.resolve(__dirname, "dist/public"),
+    emptyOutDir: true,
+  },
 });

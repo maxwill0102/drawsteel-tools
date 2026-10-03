@@ -1,6 +1,7 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { Swords, Table2 } from "lucide-react";
 import Layout from "@/components/Layout";
+import { trpc } from "@/providers/trpc";
 import {
   difficultyBands,
   entryEv,
@@ -9,7 +10,6 @@ import {
   type Monster,
 } from "@contracts/game";
 import { cn } from "@/lib/utils";
-import type { EncounterRow, MonsterRow } from "@db/schema";
 
 const DIFF_BADGE: Record<string, string> = {
   trivial: "text-slate-300 border-slate-400/30 bg-slate-500/10",
@@ -19,21 +19,41 @@ const DIFF_BADGE: Record<string, string> = {
   extreme: "text-[var(--crimson-soft)] border-[rgba(214,60,42,0.45)] bg-[rgba(214,60,42,0.12)]",
 };
 
-export type SharedLoaderData = {
-  encounter: EncounterRow;
-  monsters: MonsterRow[];
-};
-
-export default function SharedEncounter({
-  loaderData,
-}: {
-  loaderData: SharedLoaderData;
-}) {
-  const { encounter, monsters: monsterRows } = loaderData;
+export default function SharedEncounter() {
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { data: encounter, isLoading, error } = trpc.encounters.bySlug.useQuery(
+    { slug: slug! },
+    { enabled: !!slug, retry: false },
+  );
+  const { data: monsterRows } = trpc.monsters.list.useQuery();
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="mx-auto max-w-4xl px-4 py-20 text-center text-[var(--slate)]">Loading encounter…</div>
+      </Layout>
+    );
+  }
+
+  if (error || !encounter) {
+    return (
+      <Layout>
+        <div className="mx-auto max-w-4xl px-4 py-20 text-center">
+          <h1 className="font-display text-3xl font-bold">Encounter not found</h1>
+          <p className="mt-3 text-sm text-[var(--slate)]">
+            This link may be broken or the encounter was deleted.
+          </p>
+          <Link to="/" className="mt-6 inline-block text-sm font-semibold text-[var(--gold)] underline">
+            Build your own encounter
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
 
   const monsterMap = new Map<number, Monster>(
-    monsterRows.map((r) => [
+    (monsterRows ?? []).map((r) => [
       r.id,
       {
         id: r.id,

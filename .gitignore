@@ -3,5 +3,4 @@ dist
 .env
 .vercel
 *.log
-.react-router
-build
+api/_bundle.js
